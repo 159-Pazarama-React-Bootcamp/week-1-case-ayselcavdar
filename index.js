@@ -1,6 +1,7 @@
 // burada html'de oluşturduğum input ve butonları yakaladım
 const creditInput = document.getElementById("creditCard");
 const checkBtn = document.getElementById("checkBtn");
+const messageContainer = document.querySelector("#messageContainer");
 
 // Kredi kartının geçerli olup olmadığını kontrol için buton elementime
 // event listener ekledim
@@ -9,20 +10,41 @@ checkBtn.addEventListener("click", () => {
   if (isCreditCardNumberValid(creditInput.value)) {
     // kullanıcı butona bastıktan sonra input'u temizledim
     creditInput.value = "";
-    return alert("valid");
+    return showMessage(true);
   }
   // geçersiz kredi kartı durumunda gösterdiğim mesaj
-  alert("not valid");
+  showMessage(false);
   creditInput.value = "";
 });
 
 /**
  *
+ * @param {boolean} isValid
+ * Bu fonksiyon yalnızca 1 tane arguman kabul etmektedir
+ * @description
+ * Fonksiyon tetiklendiğinde alınan argumana göre mesaj dom'a eklenmektedir.
+ * Bu mesaj kullanıcıya 3 saniyelik gösterilmekte ve sonrasında kaybolmaktadır.
+ */
+
+const showMessage = (isValid) => {
+  messageContainer.innerHTML += `
+  <h5 id="message" style="color:${isValid ? "green" : "red"};" >${
+    isValid ? "Your card number is valid." : "Your card number is invalid"
+  }<h5>
+  `;
+  setTimeout(function () {
+    messageContainer.innerHTML = "";
+  }, 3000);
+};
+
+/**
+ *
  * @param {string} cardNumber
- * A function that accepts only one arguments.
+ * Bu fonksiyon yalnızca 1 tane arguman kabul etmektedir
  * @returns boolean
  * @description
- * the function checks the given argument is valid for creadit number or not
+ * Alınan arguman belirli validasyonlardan geçerek true ve ya false değeri dönmektedir.
+ * Bu fonksiyon card numarası validator'lüğü için oluşturulmuştur
  */
 
 const isCreditCardNumberValid = (cardNumber) => {
@@ -34,13 +56,17 @@ const isCreditCardNumberValid = (cardNumber) => {
   } else {
     splittedCardNum = cardNumber.trim().split("");
   }
-  
+
   // girilen card numarası için verilen kısıtlamalardan biri olan 16'dan büyük olma şartını değişkenime atadım
   const totalConstrait = 16;
   const lengthOfCard = splittedCardNum.length === 16;
+  
   // aşağıda array methodu olan every ile oluşturduğum array içindeki tüm elemanların eşitlik durumunu kontrol etttim
-  const isAllNumberSame = splittedCardNum.every((val, i, arr) => val === arr[0]);
-  const isLastNumEven = parseInt(splittedCardNum[splittedCardNum.length - 1]) % 2 === 0;
+  const isAllNumberSame = splittedCardNum.every(
+    (val, i, arr) => val === arr[0]
+  );
+  const isLastNumEven =
+    parseInt(splittedCardNum[splittedCardNum.length - 1]) % 2 === 0;
 
   // for döngüsü ile tüm arrayımı dolaşıp içindeki elemanların toplamını aldım
   let sumOfCardNum = 0;
